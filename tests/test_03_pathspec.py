@@ -54,6 +54,38 @@ class PathSpecTest(unittest.TestCase):
 		"""
 		shutil.rmtree(self.temp_dir)
 
+	def test_1(self):
+		spec = PathSpec.from_lines('gitwildmatch', ['foo**/bar'])
+		files = {'foobar'}
+		results = list(spec.check_files(files))
+		includes = get_includes(results)
+		debug = debug_results(spec, results)
+		self.assertEqual(includes, {'foobar'}, debug)
+
+	def test_2(self):
+		spec = PathSpec.from_lines('gitwildmatch', [' foo'])
+		files = {' foo'}
+		results = list(spec.check_files(files))
+		includes = get_includes(results)
+		debug = debug_results(spec, results)
+		self.assertEqual(includes, {' foo'}, debug)
+
+	def test_3(self):
+		spec = PathSpec.from_lines('gitwildmatch', ['['])
+		files = {'['}
+		results = list(spec.check_files(files))
+		includes = get_includes(results)
+		debug = debug_results(spec, results)
+		self.assertEqual(includes, {}, debug)
+
+	def test_4(self):
+		spec = PathSpec.from_lines('gitwildmatch', ['[!]'])
+		files = {'[!]'}
+		results = list(spec.check_files(files))
+		includes = get_includes(results)
+		debug = debug_results(spec, results)
+		self.assertEqual(includes, {}, debug)
+
 	def test_01_absolute_dir_paths_1(self):
 		"""
 		Tests that absolute paths will be properly normalized and matched.
